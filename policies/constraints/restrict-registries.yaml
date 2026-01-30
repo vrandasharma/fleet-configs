@@ -1,41 +1,17 @@
-apiVersion: templates.gatekeeper.sh/v1
-kind: ConstraintTemplate
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sAllowedRepos
 metadata:
-  name: k8sallowedrepos
+  name: fleet-restrict-public-images
 spec:
-  crd:
-    spec:
-      names:
-        kind: K8sAllowedRepos
-      validation:
-        openAPIV3Schema:
-          type: object
-          properties:
-            repos:
-              description: "The list of allowed registry prefixes."
-              type: array
-              items:
-                type: string
-  targets:
-    - target: admission.k8s.gatekeeper.sh
-      rego: |
-        package k8sallowedrepos
-
-        # Check standard containers
-        violation({"msg": msg}) {
-          container := input.review.object.spec.template.spec.containers[_]
-          not is_allowed(container.image)
-          msg := sprintf("Image '%v' is from an untrusted registry.", [container.image])
-        }
-
-        # Check init containers
-        violation({"msg": msg}) {
-          container := input.review.object.spec.template.spec.initContainers[_]
-          not is_allowed(container.image)
-          msg := sprintf("Init image '%v' is from an untrusted registry.", [container.image])
-        }
-
-        is_allowed(image) {
-          repo := input.parameters.repos[_]
-          startswith(image, repo)
-        }
+  enforcementAction: deny
+  match:
+    kinds:
+      - apiGroups: ["apps"]
+        kinds: ["Deployment", "StatefulSet", "DaemonSet"]
+    # Usually we exclude kube-system to prevent breaking cluster-internal tools
+    excludedNamespaces: ["kube-system", "config-management-system"]
+  parameters:
+    repos:
+      - "gcr.io/my-secure-project/"       # Google Container Registry
+      - "us-docker.pkg.dev/my-project/"  # Artifact Registry (Recommended)
+      - "eu.gcr.io/my-secure-project/"
