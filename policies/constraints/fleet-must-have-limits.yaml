@@ -1,0 +1,24 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredResources
+metadata:
+  name: fleet-must-have-limits
+  annotations:
+    # Only applies to clusters matching this selector in your Git repo
+    configmanagement.gke.io/cluster-selector: resource-enforced-clusters
+spec:
+  enforcementAction: deny
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    # We exclude system namespaces to prevent core services from being blocked
+    excludedNamespaces:
+      - "kube-system"
+      - "config-management-system"
+      - "gatekeeper-system"
+      - "gke-connect"
+  parameters:
+    # This array defines the keys required under 'resources.limits'
+    limits:
+      - cpu
+      - memory
