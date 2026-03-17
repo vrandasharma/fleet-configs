@@ -1,0 +1,11 @@
+# clusterregistry/resource-enforced-selector.yaml
+kind: ClusterSelector
+apiVersion: configmanagement.gke.io/v1
+metadata:
+  name: resource-enforced-clusters
+spec:
+  selector:
+    matchLabels:
+      # This policy applies ONLY to clusters with this label in the fleet
+      env: testclusterselector
+      # You could also add 'tier: high-perf' or similar
