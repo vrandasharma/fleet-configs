@@ -1,14 +1,17 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
-kind: K8sRequiredLabels
+kind: K8sAllowedRepos
 metadata:
-  name: namespaces-must-have-owner-governance
+  name: fleet-restrict-public-images
 spec:
-  enforcementAction: deny
+  enforcementAction: dry-run
   match:
     kinds:
-      - apiGroups: [""]
-        kinds: ["Namespace"]
+      - apiGroups: ["apps"]
+        kinds: ["Deployment", "StatefulSet", "DaemonSet"]
+    # Usually we exclude kube-system to prevent breaking cluster-internal tools
+    excludedNamespaces: ["kube-system", "config-management-system"]
   parameters:
-    labels:
-      - key: "owner"
-
+    repos:
+      - "gcr.io/my-secure-project/"       # Google Container Registry
+      - "us-docker.pkg.dev/my-project/"  # Artifact Registry (Recommended)
+      - "eu.gcr.io/my-secure-project/"
