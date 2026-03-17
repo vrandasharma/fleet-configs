@@ -1,6 +1,7 @@
 # clusterregistry/resource-enforced-selector.yaml
-kind: ClusterSelector
+
 apiVersion: configmanagement.gke.io/v1
+kind: ClusterSelector
 metadata:
   name: resource-enforced-clusters
 spec:
@@ -10,6 +11,7 @@ spec:
       policy-group: custom-template-enabled
       # You could also add 'tier: high-perf' or similarapiVersion: constraints.gatekeeper.sh/v1beta1
 ---
+apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sBlockNodePort
 metadata:
   name: block-node-port
