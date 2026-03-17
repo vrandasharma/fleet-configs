@@ -3,7 +3,7 @@ kind: K8sAllowedRepos
 metadata:
   name: fleet-restrict-public-images
 spec:
-  enforcementAction: dry-run
+  enforcementAction: dryrun
   match:
     kinds:
       - apiGroups: ["apps"]
