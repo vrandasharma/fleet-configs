@@ -1,9 +1,1 @@
-apiVersion: configmanagement.gke.io/v1
-kind: ClusterSelector
-metadata:
-  name: resource-enforced-clusters
-spec:
-  selector:
-    matchLabels:
-      # This label must exist on the Fleet Membership for the target clusters
-      policy-group: custom-template-enabled
+
